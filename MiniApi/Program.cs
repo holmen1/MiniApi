@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MiniApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseInMemoryDatabase("InMemoryDb"));
 
 var app = builder.Build();
 
@@ -18,7 +21,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapPost("/data", (SampleDataDto dataDto) =>
+app.MapPost("/data", async (SampleDataDto dataDto, AppDbContext dbContext) =>
     {
         // Map DTOs to domain models
         var users = dataDto.Users.Select(dto => new User
@@ -34,6 +37,10 @@ app.MapPost("/data", (SampleDataDto dataDto) =>
             Portfolio = Enum.Parse<Portfolio>(dto.Portfolio, true),
             Value = dto.Value
         }).ToList();
+        
+        dbContext.Users.AddRange(users);
+        dbContext.Orders.AddRange(orders);
+        await dbContext.SaveChangesAsync();
 
         // Process the domain models (e.g., save to a database)
         return Results.Ok(new { Users = users, Orders = orders });
@@ -42,3 +49,4 @@ app.MapPost("/data", (SampleDataDto dataDto) =>
     .WithOpenApi();
 
 app.Run();
+
