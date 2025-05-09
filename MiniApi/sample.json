@@ -1,0 +1,26 @@
+{
+  "Users": [
+    {
+      "First": "Alice",
+      "Last": "Hope",
+      "Age": 30.2
+    },
+    {
+      "First": "Bob",
+      "Last": "Hope",
+      "Age": 42.2
+    }
+  ],
+  "Orders": [
+    {
+      "Region": "SE",
+      "Portfolio": "Low",
+      "Value": 300.2
+    },
+    {
+      "Region": "NO",
+      "Portfolio": "Low",
+      "Value": 400.2
+    }
+  ]
+}
