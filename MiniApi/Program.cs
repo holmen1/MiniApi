@@ -9,6 +9,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("InMemoryDb"));
+// builder.Services.AddDbContext<AppDbContext>(options =>
+//     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
@@ -47,6 +49,12 @@ app.MapPost("/data", async (SampleDataDto dataDto, AppDbContext dbContext) =>
     })
     .WithName("PostSampleData")
     .WithOpenApi();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
+}
 
 app.Run();
 
